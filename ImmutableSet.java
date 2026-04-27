@@ -23,9 +23,9 @@ public class ImmutableSet<T> implements Set<T> {
             this.root = null;
         }else{
             Iterator<T> iterator = c.iterator();
-            ImmutableSetNode<T> current = new ImmutableSetNode(iterator.next(), null);
+            ImmutableSetNode<T> current = new ImmutableSetNode<T>(iterator.next(), null);
             while(iterator.hasNext()){
-                current = new ImmutableSetNode(iterator.next(), current);
+                current = new ImmutableSetNode<T>(iterator.next(), current);
             }
             root = current;
         }
