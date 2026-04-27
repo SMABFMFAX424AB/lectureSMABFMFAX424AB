@@ -1,14 +1,16 @@
 import java.util.*;
 
-public class ImmutableSet<T> implements Set<T> {
+public class ImmutableSet<T> implements Iterable<T> {
 
     private static class ImmutableSetNode<T>{
         final T element;
         final ImmutableSetNode<T> next;
+        final boolean added;
 
-        ImmutableSetNode(T element, ImmutableSetNode<T> next){
+        ImmutableSetNode(T element, ImmutableSetNode<T> next, boolean added) {
             this.element = element;
             this.next = next;
+            this.added = added;
         }
     }
 
@@ -23,90 +25,118 @@ public class ImmutableSet<T> implements Set<T> {
             this.root = null;
         }else{
             Iterator<T> iterator = c.iterator();
-            ImmutableSetNode<T> current = new ImmutableSetNode<T>(iterator.next(), null);
+            ImmutableSetNode<T> current = new ImmutableSetNode<T>(iterator.next(), null, true);
             while(iterator.hasNext()){
-                current = new ImmutableSetNode<T>(iterator.next(), current);
+                current = new ImmutableSetNode<T>(iterator.next(), current, true);
             }
             root = current;
         }
     }
-    
-    @Override
+
+    private ImmutableSet(ImmutableSetNode<T> root){
+        this.root = root;
+    }
+
     public int size() {
         // TODO Auto-generated method stub
         return 0;
     }
 
-    @Override
     public boolean isEmpty() {
-        // TODO Auto-generated method stub
-        return false;
+        return root == null;
     }
 
-    @Override
     public boolean contains(Object o) {
-        // TODO Auto-generated method stub
+        for(T t : this) {
+            if(t.equals(o)){
+                return true;
+            }
+        }
+        /*
+            Iterator<T> iterator = this.iterator();
+            while(iterator.hasNext()) {
+                T t = iterator.next();
+                Gleicher Schleifenkörper wie oben
+            }
+        */
         return false;
+        /*ImmutableSetNode<T> current = root;
+        while(current != null) {
+            if (current.element.equals(o)){
+                return current.added;
+            }
+            current = current.next;
+        }
+        return false;*/
+    }
+
+    public static class ImmutableSetIterator<T> implements Iterator<T> {
+        ImmutableSetNode<T> current;
+        ImmutableSet<T> used;
+
+        public ImmutableSetIterator(ImmutableSetNode<T> current) {
+            this.current = current;
+            used = new ImmutableSet<>();
+            forward();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        @Override
+        public T next() {
+            T result = current.element;
+            used = used.add(current.element);
+            current = current.next;
+            forward();
+            return result;
+        }
+
+        private void forward() {
+            while(current != null && (!current.added || !used.contains(current.element))){
+                used = used.add(current.element);
+                current = current.next;
+            }
+        }
     }
 
     @Override
     public Iterator<T> iterator() {
-        // TODO Auto-generated method stub
-        return null;
+        return new ImmutableSetIterator<>(root);
     }
 
-    @Override
-    public Object[] toArray() {
-        // TODO Auto-generated method stub
-        return null;
+    public ImmutableSet<T> add(T e) {
+        return new ImmutableSet<T>(new ImmutableSetNode<T>(e, this.root, true));
     }
 
-    @Override
-    public <T> T[] toArray(T[] a) {
-        // TODO Auto-generated method stub
-        return null;
+    public ImmutableSet<T> remove(T e) {
+        return new ImmutableSet<T>(new ImmutableSetNode<T>(e, this.root, false));
     }
 
-    @Override
-    public boolean add(T e) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public boolean remove(Object o) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
     public boolean containsAll(Collection<?> c) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    @Override
     public boolean addAll(Collection<? extends T> c) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    @Override
     public boolean retainAll(Collection<?> c) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    @Override
     public boolean removeAll(Collection<?> c) {
         // TODO Auto-generated method stub
         return false;
     }
 
-    @Override
-    public void clear() {
-        // TODO Auto-generated method stub
-        
+    public ImmutableSet<T> clear() {
+        return new ImmutableSet<T>();
     }
 
 
