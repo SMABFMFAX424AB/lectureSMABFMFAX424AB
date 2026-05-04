@@ -3,7 +3,7 @@
 import java.util.*;
 import java.util.stream.*;
 
-public class BinaryTreeNode<T extends Comparable<T>> implements SearchTreeNode<T> {
+public class BinaryTreeNode<T extends Comparable<T>> {
 
     protected static <T extends Comparable<T>> int height(final Optional<?extends BinaryTreeNode<T>> node) {
         return node.isEmpty() ? 0 : node.get().getHeight();
@@ -42,7 +42,6 @@ public class BinaryTreeNode<T extends Comparable<T>> implements SearchTreeNode<T
         this.nodeFactory = nodeFactory;
     }
 
-    @Override
     public BinaryTreeNode<T> add(final T value) {
         if (this.value.compareTo(value) < 0) {
             if (this.rightChild.isEmpty()) {
@@ -83,7 +82,6 @@ public class BinaryTreeNode<T extends Comparable<T>> implements SearchTreeNode<T
         return Math.max(BinaryTreeNode.height(this.leftChild), BinaryTreeNode.height(this.rightChild)) + 1;
     }
 
-    @Override
     public T getMin() {
         BinaryTreeNode<T> current = this;
         while (current.leftChild.isPresent()) {
@@ -99,7 +97,6 @@ public class BinaryTreeNode<T extends Comparable<T>> implements SearchTreeNode<T
             + this.rightChild.hashCode() * 2;
     }
 
-    @Override
     public Optional<? extends BinaryTreeNode<T>> remove(final T value) {
         final int comparison = this.value.compareTo(value);
         if (comparison == 0) {
